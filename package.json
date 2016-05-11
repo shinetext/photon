@@ -23,6 +23,9 @@
     "sails": "~0.12.3",
     "sails-disk": "~0.10.9"
   },
+  "devDependencies": {
+    "sails-hook-autoreload": "^0.13.1"
+  },
   "scripts": {
     "debug": "node debug app.js",
     "start": "node app.js"
