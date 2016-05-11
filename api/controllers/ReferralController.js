@@ -8,7 +8,6 @@ module.exports = {
    * it to the database.
    */
   findOne: function(req, res) {
-    let user;
     let phone = req.params.phone;
 
     if (phone.length === 10) {
@@ -22,7 +21,7 @@ module.exports = {
     }
 
     // Find this user by the phone number
-    User.findOne({phone_number: phone})
+    User.findOne({phoneNumber: phone})
       .then(function(result) {
         // Throw an error if the user's not found
         if (typeof result === 'undefined') {
@@ -50,12 +49,12 @@ module.exports = {
           resBody.referralCode = code;
 
           // Update in the database
-          return User.update({phone_number: phone}, {referral_code: code});
+          return User.update({phoneNumber: phone}, {referralCode: code});
         }
       })
       // Get the number of people the user has successfully referred
       .then(function(results) {
-        return User.count({referred_by: phone});
+        return User.count({referredBy: phone});
       })
       // Add the count to the response and send
       .then(function(result) {
@@ -66,7 +65,7 @@ module.exports = {
       // In case of error, respond with something
       .catch(function(error) {
         return res.json({
-          phone_number: phone,
+          phone: phone,
           error: 'Unable to retrieve referral information for this user'
         });
       });
