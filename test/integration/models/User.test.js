@@ -64,7 +64,7 @@ describe('User', function() {
     it('should return a count of users referred by that number', function(done) {
       User.count({referredBy: fixtures.user[0].phoneNumber})
         .then(function(result) {
-          assert.equal(result, 2); // UserB and UserC
+          assert.equal(result, 2); // User.test.B and User.test.C
 
           done();
         });

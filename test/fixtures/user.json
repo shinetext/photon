@@ -22,5 +22,11 @@
     "phoneNumber": "15555550104",
     "referralCode": null,
     "referredBy": null
+  },
+  {
+    "firstName": "ReferralController.test.noCode",
+    "phoneNumber": "15555550105",
+    "referralCode": null,
+    "referredBy": null
   }
 ]
