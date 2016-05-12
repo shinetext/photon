@@ -75,7 +75,7 @@ module.exports = {
         return res.json(500, {
           error: 'There was an error in processing the signup'
         });
-      })
-  }
+      });
+  },
 
 };

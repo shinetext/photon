@@ -5,6 +5,7 @@ var fixtures = (new Barrels()).data;
 describe('User', function() {
 
   var userToCreate = {
+    email: 'user.test.create@test.com',
     firstName: 'User.test.create',
     phone: '15555550100',
     referralCode: 'JblJJPj',
@@ -16,6 +17,7 @@ describe('User', function() {
       User.create(userToCreate)
         .then(function(result) {
           assert(typeof result.id !== 'undefined');
+          assert.equal(result.email, userToCreate.email);
           assert.equal(result.firstName, userToCreate.firstName);
           assert.equal(result.phone, userToCreate.phone);
           assert.equal(result.referralCode, userToCreate.referralCode);
