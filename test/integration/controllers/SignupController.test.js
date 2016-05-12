@@ -18,7 +18,7 @@ describe('SignupController', function() {
 
   var userSignupUpdate = {
     firstName: 'SignupController.test.NewName',
-    phone: fixtures.user[6].phoneNumber
+    phone: fixtures.user[6].phone
   };
 
   var userSignupEmail = {
@@ -42,10 +42,10 @@ describe('SignupController', function() {
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignup1.phone);
-        User.findOne({phoneNumber: phone})
+        User.findOne({phone: phone})
           .then(function(result) {
             assert.equal(result.firstName, userSignup1.firstName);
-            assert.equal(result.phoneNumber, '1' + userSignup1.phone);
+            assert.equal(result.phone, '1' + userSignup1.phone);
             assert.equal(result.referralCode, expectedCode);
             done();
           });
@@ -58,7 +58,7 @@ describe('SignupController', function() {
         .expect(function(res) {
           assert(typeof res.body.id !== 'undefined');
           assert.equal(res.body.firstName, userSignup1.firstName);
-          assert.equal(res.body.phoneNumber, '1' + userSignup1.phone);
+          assert.equal(res.body.phone, '1' + userSignup1.phone);
           assert.equal(res.body.referralCode, expectedCode);
         })
         .end(checkDb);
@@ -70,14 +70,14 @@ describe('SignupController', function() {
     it('should save the user and decode the referral code', function(done) {
 
       var expectedCode = ReferralCodes.encode(userSignup2.phone);
-      var expectedReferredBy = fixtures.user[5].phoneNumber;
+      var expectedReferredBy = fixtures.user[5].phone;
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignup2.phone);
-        User.findOne({phoneNumber: phone})
+        User.findOne({phone: phone})
           .then(function(result) {
             assert.equal(result.firstName, userSignup2.firstName);
-            assert.equal(result.phoneNumber, '1' + userSignup2.phone);
+            assert.equal(result.phone, '1' + userSignup2.phone);
             assert.equal(result.referralCode, expectedCode);
             assert.equal(result.referredBy, expectedReferredBy);
             done();
@@ -91,7 +91,7 @@ describe('SignupController', function() {
         .expect(function(res) {
           assert(typeof res.body.id !== 'undefined');
           assert.equal(res.body.firstName, userSignup2.firstName);
-          assert.equal(res.body.phoneNumber, '1' + userSignup2.phone);
+          assert.equal(res.body.phone, '1' + userSignup2.phone);
           assert.equal(res.body.referralCode, expectedCode);
           assert.equal(res.body.referredBy, expectedReferredBy);
         })
@@ -107,10 +107,10 @@ describe('SignupController', function() {
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignupUpdate.phone);
-        User.findOne({phoneNumber: phone})
+        User.findOne({phone: phone})
           .then(function(result) {
             assert.equal(result.firstName, userSignupUpdate.firstName);
-            assert.equal(result.phoneNumber, userSignupUpdate.phone);
+            assert.equal(result.phone, userSignupUpdate.phone);
             assert.equal(result.referralCode, expectedCode);
             done()
           });
@@ -123,7 +123,7 @@ describe('SignupController', function() {
         .expect(function(res) {
           assert(typeof res.body.id !== 'undefined');
           assert.equal(res.body.firstName, userSignupUpdate.firstName);
-          assert.equal(res.body.phoneNumber, userSignupUpdate.phone);
+          assert.equal(res.body.phone, userSignupUpdate.phone);
           assert.equal(res.body.referralCode, expectedCode);
         })
         .end(checkDb);
@@ -138,11 +138,11 @@ describe('SignupController', function() {
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignupEmail.phone);
-        User.findOne({phoneNumber: phone})
+        User.findOne({phone: phone})
           .then(function(result) {
             assert.equal(result.email, userSignupEmail.email);
             assert.equal(result.firstName, userSignupEmail.firstName);
-            assert.equal(result.phoneNumber, '1' + userSignupEmail.phone);
+            assert.equal(result.phone, '1' + userSignupEmail.phone);
             assert.equal(result.referralCode, expectedCode);
             done();
           });
@@ -156,7 +156,7 @@ describe('SignupController', function() {
           assert(typeof res.body.id !== 'undefined');
           assert.equal(res.body.email, userSignupEmail.email);
           assert.equal(res.body.firstName, userSignupEmail.firstName);
-          assert.equal(res.body.phoneNumber, '1' + userSignupEmail.phone);
+          assert.equal(res.body.phone, '1' + userSignupEmail.phone);
           assert.equal(res.body.referralCode, expectedCode);
         })
         .end(checkDb);

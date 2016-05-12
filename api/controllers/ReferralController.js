@@ -17,7 +17,7 @@ module.exports = {
     }
 
     // Find this user by the phone number
-    User.findOne({phoneNumber: phone})
+    User.findOne({phone: phone})
       .then(function(result) {
         // Throw an error if the user's not found
         if (typeof result === 'undefined') {
@@ -45,7 +45,7 @@ module.exports = {
           resBody.referralCode = code;
 
           // Update in the database
-          return User.update({phoneNumber: phone}, {referralCode: code});
+          return User.update({phone: phone}, {referralCode: code});
         }
       })
       // Get the number of people the user has successfully referred

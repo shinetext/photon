@@ -6,7 +6,7 @@ describe('User', function() {
 
   var userToCreate = {
     firstName: 'User.test.create',
-    phoneNumber: '15555550100',
+    phone: '15555550100',
     referralCode: 'JblJJPj',
     referredBy: '15555550102'
   };
@@ -17,7 +17,7 @@ describe('User', function() {
         .then(function(result) {
           assert(typeof result.id !== 'undefined');
           assert.equal(result.firstName, userToCreate.firstName);
-          assert.equal(result.phoneNumber, userToCreate.phoneNumber);
+          assert.equal(result.phone, userToCreate.phone);
           assert.equal(result.referralCode, userToCreate.referralCode);
           assert.equal(result.referredBy, userToCreate.referredBy);
 
@@ -28,10 +28,10 @@ describe('User', function() {
 
   describe('#findOne() by phone number', function() {
     it('should find the user', function(done) {
-      User.findOne({phoneNumber: fixtures.user[0].phoneNumber})
+      User.findOne({phone: fixtures.user[0].phone})
         .then(function(result) {
           assert.equal(result.firstName, fixtures.user[0].firstName);
-          assert.equal(result.phoneNumber, fixtures.user[0].phoneNumber);
+          assert.equal(result.phone, fixtures.user[0].phone);
           assert.equal(result.referralCode, fixtures.user[0].referralCode);
           assert.equal(result.referredBy, fixtures.user[0].referredBy);
 
@@ -45,12 +45,12 @@ describe('User', function() {
       var dummyCode = 'abc0102';
       assert(fixtures.user[3].referralCode != dummyCode);
 
-      User.update({phoneNumber: fixtures.user[3].phoneNumber}, {referralCode: dummyCode})
+      User.update({phone: fixtures.user[3].phone}, {referralCode: dummyCode})
         .then(function(results) {
           assert(results.length > 0);
           assert.equal(results[0].referralCode, dummyCode);
 
-          return User.findOne({phoneNumber: fixtures.user[3].phoneNumber});
+          return User.findOne({phone: fixtures.user[3].phone});
         })
         .then(function(result) {
           assert.equal(result.referralCode, dummyCode);
@@ -62,7 +62,7 @@ describe('User', function() {
 
   describe('#count() with a referredBy number', function() {
     it('should return a count of users referred by that number', function(done) {
-      User.count({referredBy: fixtures.user[0].phoneNumber})
+      User.count({referredBy: fixtures.user[0].phone})
         .then(function(result) {
           assert.equal(result, 2); // User.test.B and User.test.C
 

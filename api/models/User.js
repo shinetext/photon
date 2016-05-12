@@ -14,7 +14,7 @@ module.exports = {
       size: 64
     },
 
-    phoneNumber: {
+    phone: {
       columnName: 'phone_number',
       type: 'string',
       size: 11

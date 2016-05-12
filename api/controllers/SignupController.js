@@ -28,11 +28,11 @@ module.exports = {
     }
 
     // Upsert the user with the provided info
-    User.findOne({phoneNumber: phone})
+    User.findOne({phone: phone})
       .then(function(result) {
         let user = {
           firstName: firstName,
-          phoneNumber: phone
+          phone: phone
         };
 
         if (email) {
@@ -50,7 +50,7 @@ module.exports = {
         }
 
         if (result) {
-          return User.update({phoneNumber: phone}, user);
+          return User.update({phone: phone}, user);
         }
         else {
           return User.create(user);
