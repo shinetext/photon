@@ -11,6 +11,10 @@ module.exports = {
     let firstName = req.body.firstName;
     let phone = PhoneUtils.transformForDb(req.body.phone);
 
+    if (typeof firstName === 'undefined' || phone === null || phone.length !== 11) {
+      return res.json(400, 'Invalid first name and/or phone number');
+    }
+
     // Optional
     let email = req.body.email;
     let referredBy;
@@ -67,9 +71,9 @@ module.exports = {
         }
       })
       .catch(function(error) {
-        console.log(error);
-        return res.json({
-          error: 'uh oh'
+        sails.log.error(error);
+        return res.json(500, {
+          error: 'There was an error in processing the signup'
         });
       })
   }

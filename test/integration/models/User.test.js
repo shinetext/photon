@@ -5,7 +5,7 @@ var fixtures = (new Barrels()).data;
 describe('User', function() {
 
   var userToCreate = {
-    firstName: 'User.text.create',
+    firstName: 'User.test.create',
     phoneNumber: '15555550100',
     referralCode: 'JblJJPj',
     referredBy: '15555550102'

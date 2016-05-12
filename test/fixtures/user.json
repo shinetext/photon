@@ -28,5 +28,17 @@
     "phoneNumber": "15555550105",
     "referralCode": null,
     "referredBy": null
+  },
+  {
+    "firstName": "SignupController.test.referrer",
+    "phoneNumber": "15555550110",
+    "referralCode": "Opl22M3",
+    "referredBy": null
+  },
+  {
+    "firstName": "SignupController.test.update",
+    "phoneNumber": "15555550111",
+    "referralCode": null,
+    "referredBy": null
   }
 ]
