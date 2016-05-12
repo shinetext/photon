@@ -7,6 +7,10 @@ module.exports = {
    * @param phone String phone number to transform
    */
   transformForDb: function(phone) {
+    if (typeof phone !== 'string') {
+      return null;
+    }
+
     let result = phone;
 
     // Remove all non-numeric characters
