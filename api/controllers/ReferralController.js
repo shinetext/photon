@@ -60,7 +60,7 @@ module.exports = {
       })
       // In case of error, respond with something
       .catch(function(error) {
-        return res.json({
+        return res.json(404, {
           phone: phone,
           error: 'Unable to retrieve referral information for this user'
         });
