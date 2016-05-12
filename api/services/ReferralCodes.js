@@ -31,6 +31,17 @@ module.exports = {
     }
 
     return hashids.encode(parseInt(number));
+  },
+
+  /**
+   * Decodes unique string code into its original phone number
+   *
+   * @param code String
+   * @return String Decoded phone number
+   */
+  decode: function(code) {
+    let number = hashids.decode(code);
+    return number.toString();
   }
 
 };

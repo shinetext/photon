@@ -8,6 +8,12 @@ module.exports = {
   // Only specifying properties that can be used by and exposed to client apps
   attributes: {
 
+    firstName: {
+      columnName: 'first_name',
+      type: 'string',
+      size: 64
+    },
+
     phoneNumber: {
       columnName: 'phone_number',
       type: 'string',

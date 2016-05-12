@@ -8,11 +8,7 @@ module.exports = {
    * it to the database.
    */
   findOne: function(req, res) {
-    let phone = req.params.phone;
-
-    if (phone.length === 10) {
-      phone = '1' + phone;
-    }
+    let phone = PhoneUtils.transformForDb(req.params.phone);
 
     let resBody = {
       phone: phone,
