@@ -26,11 +26,11 @@ module.exports.connections = {
    */
   photonDb: {
     adapter: 'sails-mysql',
-    host: process.env.PHOTON_HOST || 'localhost',
-    port: process.env.PHOTON_PORT || '',
-    user: process.env.PHOTON_USER || 'root',
-    password: process.env.PHOTON_PASSWORD || 'password',
-    database: process.env.PHOTON_DATABASE || 'photon'
+    host: process.env.PHOTON_DB_HOST || 'localhost',
+    port: process.env.PHOTON_DB_PORT || '',
+    user: process.env.PHOTON_DB_USER || 'root',
+    password: process.env.PHOTON_DB_PASSWORD || 'password',
+    database: process.env.PHOTON_DB_DATABASE || 'photon'
   },
 
 };
