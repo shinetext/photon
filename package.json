@@ -20,6 +20,7 @@
     "grunt-sync": "0.2.4",
     "hashids": "^1.0.2",
     "include-all": "~0.1.6",
+    "newrelic": "^1.27.2",
     "rc": "1.0.1",
     "sails": "~0.12.3",
     "sails-mysql": "^0.12.1"

@@ -3,6 +3,7 @@
     "modules": {}
   },
   "hooks": {
+    "csrf": false,
     "pubsub": false,
     "session": false,
     "sockets": false
