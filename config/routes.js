@@ -22,6 +22,7 @@
 
 module.exports.routes = {
 
+  'get /health': 'HealthCheckController.check',
   'get /referral/:phone': 'ReferralController.findOne',
   'post /signup': 'SignupController.signup'
 
