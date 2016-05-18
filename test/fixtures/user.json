@@ -1,0 +1,44 @@
+[
+  {
+    "firstName": "User.test.A",
+    "phone": "15555550101",
+    "referralCode": "qMoyyeg",
+    "referredBy": null
+  },
+  {
+    "firstName": "User.test.B",
+    "phone": "15555550102",
+    "referralCode": null,
+    "referredBy": "15555550101"
+  },
+  {
+    "firstName": "User.test.C",
+    "phone": "15555550103",
+    "referralCode": null,
+    "referredBy": "15555550101"
+  },
+  {
+    "firstName": "User.test.update",
+    "phone": "15555550104",
+    "referralCode": null,
+    "referredBy": null
+  },
+  {
+    "firstName": "ReferralController.test.noCode",
+    "phone": "15555550105",
+    "referralCode": null,
+    "referredBy": null
+  },
+  {
+    "firstName": "SignupController.test.referrer",
+    "phone": "15555550110",
+    "referralCode": "Opl22M3",
+    "referredBy": null
+  },
+  {
+    "firstName": "SignupController.test.update",
+    "phone": "15555550111",
+    "referralCode": null,
+    "referredBy": null
+  }
+]

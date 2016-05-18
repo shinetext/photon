@@ -18,14 +18,25 @@
     "grunt-contrib-watch": "0.5.3",
     "grunt-sails-linker": "~0.10.1",
     "grunt-sync": "0.2.4",
+    "hashids": "^1.0.2",
     "include-all": "~0.1.6",
+    "newrelic": "^1.27.2",
     "rc": "1.0.1",
     "sails": "~0.12.3",
-    "sails-disk": "~0.10.9"
+    "sails-mysql": "^0.12.1"
+  },
+  "devDependencies": {
+    "barrels": "^1.6.4",
+    "mocha": "^2.4.5",
+    "sails-disk": "~0.10.9",
+    "sails-hook-autoreload": "^0.13.1",
+    "sails-memory": "^0.10.6",
+    "supertest": "^1.2.0"
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "NODE_ENV=test node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/*.test.js"
   },
   "main": "app.js",
   "repository": {
