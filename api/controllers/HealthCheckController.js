@@ -10,7 +10,8 @@ module.exports = {
    */
   check: function(req, res) {
     // Run a basic query to check database connection
-    User.findOne({})
+    User.find()
+      .limit(1)
       .then(function(result) {
         return res.json(200, {user_db: 'ok'});
       })
