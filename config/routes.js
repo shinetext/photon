@@ -24,6 +24,14 @@ module.exports.routes = {
 
   'get /health': 'HealthCheckController.check',
   'get /referral/:phone': 'ReferralController.findOne',
-  'post /signup': 'SignupController.signup'
+  'post /signup': 'SignupController.signup',
+
+  'get /users': {
+    controller: 'UserController',
+    action: 'find',
+    cors: {
+      origin: process.env.CORS_DAILYSHINE_DOMAINS,
+    }
+  },
 
 };
