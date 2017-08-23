@@ -45,8 +45,19 @@
   {
     "firstName": "SignupController.test.notYetSubscribed",
     "mobilecommonsStatus": "Profiles with no Subscriptions",
-    "phone": "15555550111",
+    "phone": "15555550112",
     "referralCode": null,
-    "referredBy": "ABC123"
+    "referredBy": "15555550114"
+  },
+  {
+    "firstName": "ReferralController.test.subscribed",
+    "mobilecommonsStatus": "Active Subscriber",
+    "phone": "15555550113",
+    "referredBy": "15555550114"
+  },
+  {
+    "firstName": "ReferralController.test.referredNotYetSubscribed",
+    "mobilecommonsStatus": "Active Subscriber",
+    "phone": "15555550114"
   }
 ]
