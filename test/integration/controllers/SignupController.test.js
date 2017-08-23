@@ -1,10 +1,9 @@
 var assert = require('assert');
 var Barrels = require('barrels');
-var fixtures = (new Barrels()).data;
+var fixtures = new Barrels().data;
 var request = require('supertest');
 
 describe('SignupController', function() {
-
   var userSignup1 = {
     firstName: 'SignupController.test.A',
     phone: '5555550112',
@@ -13,43 +12,46 @@ describe('SignupController', function() {
   var userSignup2 = {
     firstName: 'SignupController.test.B',
     phone: '5555550113',
-    referredByCode: 'Opl22M3'
+    referredByCode: 'Opl22M3',
   };
 
   var userSignupUpdate = {
     firstName: 'SignupController.test.NewName',
-    phone: fixtures.user[6].phone
+    phone: fixtures.user[6].phone,
   };
 
   var userSignupEmail = {
     firstName: 'SignupController.test.C',
     phone: '5555550114',
-    email: 'user.signup@test.com'
+    email: 'user.signup@test.com',
   };
 
   var userSignupNoName = {
-    phone: '5555550115'
+    phone: '5555550115',
   };
 
   var userSignupNoPhone = {
-    firstName: 'SignupController.test.D'
+    firstName: 'SignupController.test.D',
+  };
+
+  var userSignupNewReferredBy = {
+    phone: '5555550102',
+    referredByCode: 'Opl22M3',
   };
 
   describe('#signup() new user without a referred-by code', function() {
     it('should save the user', function(done) {
-
       var expectedCode = ReferralCodes.encode(userSignup1.phone);
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignup1.phone);
-        User.findOne({phone: phone})
-          .then(function(result) {
-            assert.equal(result.firstName, userSignup1.firstName);
-            assert.equal(result.phone, '1' + userSignup1.phone);
-            assert.equal(result.referralCode, expectedCode);
-            done();
-          });
-      };
+        User.findOne({ phone: phone }).then(function(result) {
+          assert.equal(result.firstName, userSignup1.firstName);
+          assert.equal(result.phone, '1' + userSignup1.phone);
+          assert.equal(result.referralCode, expectedCode);
+          done();
+        });
+      }
 
       request(sails.hooks.http.app)
         .post('/signup')
@@ -62,27 +64,24 @@ describe('SignupController', function() {
           assert.equal(res.body.referralCode, expectedCode);
         })
         .end(checkDb);
-
     });
   });
 
   describe('#signup() new user with a referred-by code', function() {
     it('should save the user and decode the referral code', function(done) {
-
       var expectedCode = ReferralCodes.encode(userSignup2.phone);
       var expectedReferredBy = fixtures.user[5].phone;
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignup2.phone);
-        User.findOne({phone: phone})
-          .then(function(result) {
-            assert.equal(result.firstName, userSignup2.firstName);
-            assert.equal(result.phone, '1' + userSignup2.phone);
-            assert.equal(result.referralCode, expectedCode);
-            assert.equal(result.referredBy, expectedReferredBy);
-            done();
-          });
-      };
+        User.findOne({ phone: phone }).then(function(result) {
+          assert.equal(result.firstName, userSignup2.firstName);
+          assert.equal(result.phone, '1' + userSignup2.phone);
+          assert.equal(result.referralCode, expectedCode);
+          assert.equal(result.referredBy, expectedReferredBy);
+          done();
+        });
+      }
 
       request(sails.hooks.http.app)
         .post('/signup')
@@ -96,24 +95,21 @@ describe('SignupController', function() {
           assert.equal(res.body.referredBy, expectedReferredBy);
         })
         .end(checkDb);
-
     });
   });
 
   describe('#signup() existing user with different info', function() {
-    it('should update the user\'s info', function(done) {
-
+    it("should update the user's info", function(done) {
       var expectedCode = ReferralCodes.encode(userSignupUpdate.phone);
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignupUpdate.phone);
-        User.findOne({phone: phone})
-          .then(function(result) {
-            assert.equal(result.firstName, userSignupUpdate.firstName);
-            assert.equal(result.phone, userSignupUpdate.phone);
-            assert.equal(result.referralCode, expectedCode);
-            done()
-          });
+        User.findOne({ phone: phone }).then(function(result) {
+          assert.equal(result.firstName, userSignupUpdate.firstName);
+          assert.equal(result.phone, userSignupUpdate.phone);
+          assert.equal(result.referralCode, expectedCode);
+          done();
+        });
       }
 
       request(sails.hooks.http.app)
@@ -127,25 +123,41 @@ describe('SignupController', function() {
           assert.equal(res.body.referralCode, expectedCode);
         })
         .end(checkDb);
+    });
+  });
 
+  describe('#signup() existing user with new referredBy value', function() {
+    it('should keep the original referredBy value', function(done) {
+      request(sails.hooks.http.app)
+        .post('/signup')
+        .send(userSignupNewReferredBy)
+        .expect(200)
+        .expect(function(res) {
+          assert.equal(res.body.referredBy, '15555550101');
+        })
+        .end(function() {
+          var phone = PhoneUtils.transformForDb(userSignupNewReferredBy.phone);
+          User.findOne({ phone: phone }).then(function(result) {
+            assert.equal(result.referredBy, '15555550101');
+            done();
+          });
+        });
     });
   });
 
   describe('#signup() new user with email', function() {
     it('should save the user with the email', function(done) {
-
       var expectedCode = ReferralCodes.encode(userSignupEmail.phone);
 
       function checkDb() {
         var phone = PhoneUtils.transformForDb(userSignupEmail.phone);
-        User.findOne({phone: phone})
-          .then(function(result) {
-            assert.equal(result.email, userSignupEmail.email);
-            assert.equal(result.firstName, userSignupEmail.firstName);
-            assert.equal(result.phone, '1' + userSignupEmail.phone);
-            assert.equal(result.referralCode, expectedCode);
-            done();
-          });
+        User.findOne({ phone: phone }).then(function(result) {
+          assert.equal(result.email, userSignupEmail.email);
+          assert.equal(result.firstName, userSignupEmail.firstName);
+          assert.equal(result.phone, '1' + userSignupEmail.phone);
+          assert.equal(result.referralCode, expectedCode);
+          done();
+        });
       }
 
       request(sails.hooks.http.app)
@@ -160,9 +172,8 @@ describe('SignupController', function() {
           assert.equal(res.body.referralCode, expectedCode);
         })
         .end(checkDb);
-
     });
-  })
+  });
 
   describe('#signup() user without a first name', function() {
     it('should respond with a 400', function(done) {
@@ -188,10 +199,9 @@ describe('SignupController', function() {
     it('should respond with a 400', function(done) {
       request(sails.hooks.http.app)
         .post('/signup')
-        .send({phone: '12345678901234567890'})
+        .send({ phone: '12345678901234567890' })
         .expect(400)
         .end(done);
     });
   });
-
 });
