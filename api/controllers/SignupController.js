@@ -42,7 +42,14 @@ module.exports = {
           user.email = email;
         }
 
-        if (referredBy && (!result || !result.referredBy)) {
+        // The referredBy value can be updated if it has not yet been set, or if
+        // the user has not yet subscribed to Mobile Commons.
+        const canUpdateReferredBy =
+          !result ||
+          !result.referredBy ||
+          (!result.mobilecommonsStatus ||
+            result.mobilecommonsStatus !== 'Profiles with no Subscriptions');
+        if (referredBy && canUpdateReferredBy) {
           user.referredBy = referredBy;
         }
 

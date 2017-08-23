@@ -145,6 +145,28 @@ describe('SignupController', function() {
     });
   });
 
+  describe('#signup() not-yet-subscribed user with new referredBy value', function() {
+    it('should update to the new referredBy value', function(done) {
+      request(sails.hooks.http.app)
+        .post('/signup')
+        .send({
+          phone: '15555550112',
+          referredByCode: 'qMoyyeg',
+        })
+        .expect(200)
+        .expect(function(res) {
+          assert.equal(res.body.referredBy, '15555550101');
+        })
+        .end(function() {
+          var phone = PhoneUtils.transformForDb(userSignupNewReferredBy.phone);
+          User.findOne({ phone: phone }).then(function(result) {
+            assert.equal(result.referredBy, '15555550101');
+            done();
+          });
+        });
+    });
+  });
+
   describe('#signup() new user with email', function() {
     it('should save the user with the email', function(done) {
       var expectedCode = ReferralCodes.encode(userSignupEmail.phone);
