@@ -47,8 +47,8 @@ module.exports = {
         const canUpdateReferredBy =
           !result ||
           !result.referredBy ||
-          (!result.mobilecommonsStatus ||
-            result.mobilecommonsStatus !== 'Profiles with no Subscriptions');
+          !result.mobilecommonsStatus ||
+          result.mobilecommonsStatus === 'Profiles with no Subscriptions';
         if (referredBy && canUpdateReferredBy) {
           user.referredBy = referredBy;
         }

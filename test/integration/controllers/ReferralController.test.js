@@ -57,7 +57,7 @@ describe('ReferralController', function() {
       // Two test users have 15555550114 set as their referredBy. But only one
       // is marked as an active subscriber
       request(sails.hooks.http.app)
-        .get(`/referral/15555550114`)
+        .get(`/referral/15555550122`)
         .expect(200)
         .expect(function(res) {
           assert.equal(res.body.referralCount, 1);

@@ -150,8 +150,8 @@ describe('SignupController', function() {
       request(sails.hooks.http.app)
         .post('/signup')
         .send({
-          phone: '15555550112',
-          referredByCode: 'qMoyyeg',
+          phone: '15555550120',
+          referredByCode: 'qMoyyeg', // decodes to 5555550101
         })
         .expect(200)
         .expect(function(res) {
