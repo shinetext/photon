@@ -1,21 +1,19 @@
 var assert = require('assert');
 var Barrels = require('barrels');
-var fixtures = (new Barrels()).data;
+var fixtures = new Barrels().data;
 var request = require('supertest');
 
 describe('ReferralController', function() {
-
   describe('#findOne() with an invalid number', function() {
     it('should respond with a 404', function(done) {
-      request(sails.hooks.http.app)
-        .get('/referral/5555550199')
-        .expect(
-          404,
-          {
-            phone: '15555550199',
-            error: 'Unable to retrieve referral information for this user'
-          },
-          done);
+      request(sails.hooks.http.app).get('/referral/5555550199').expect(
+        404,
+        {
+          phone: '15555550199',
+          error: 'Unable to retrieve referral information for this user',
+        },
+        done
+      );
     });
   });
 
@@ -54,4 +52,17 @@ describe('ReferralController', function() {
     });
   });
 
+  describe('#findOne() on user who referred a not-yet-subscribed user', function() {
+    it('should not count that user towards their referral', function(done) {
+      // Two test users have 15555550114 set as their referredBy. But only one
+      // is marked as an active subscriber
+      request(sails.hooks.http.app)
+        .get(`/referral/15555550122`)
+        .expect(200)
+        .expect(function(res) {
+          assert.equal(res.body.referralCount, 1);
+        })
+        .end(done);
+    });
+  });
 });

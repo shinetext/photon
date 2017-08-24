@@ -1,7 +1,6 @@
 'use strict';
 
 module.exports = {
-
   /**
    * Finds a user's referral code and the number of people they've successfully
    * referred. If a referral code isn't found, then it generates one and saves
@@ -13,15 +12,15 @@ module.exports = {
     let resBody = {
       phone: phone,
       referralCode: '',
-      referralCount: 0
-    }
+      referralCount: 0,
+    };
 
     // Find this user by the phone number
-    User.findOne({phone: phone})
+    User.findOne({ phone: phone })
       .then(function(result) {
         // Throw an error if the user's not found
         if (typeof result === 'undefined') {
-          throw new Error;
+          throw new Error();
         }
 
         // If there's already a referral code, add to the response. Otherwise,
@@ -29,8 +28,7 @@ module.exports = {
         let createCode = false;
         if (result.referralCode) {
           resBody.referralCode = result.referralCode;
-        }
-        else {
+        } else {
           createCode = true;
         }
 
@@ -45,12 +43,17 @@ module.exports = {
           resBody.referralCode = code;
 
           // Update in the database
-          return User.update({phone: phone}, {referralCode: code});
+          return User.update({ phone: phone }, { referralCode: code });
         }
       })
       // Get the number of people the user has successfully referred
       .then(function(results) {
-        return User.count({referredBy: phone});
+        return User.count({
+          referredBy: phone,
+          mobilecommonsStatus: { '!': ['Profiles with no Subscriptions'] },
+        });
+        // Note: In actual use, the above also seems to take care of cases where
+        // mobilecommonsStatus is undefined. But it doesn't in unit tests.
       })
       // Add the count to the response and send
       .then(function(result) {
@@ -62,9 +65,8 @@ module.exports = {
       .catch(function(error) {
         return res.json(404, {
           phone: phone,
-          error: 'Unable to retrieve referral information for this user'
+          error: 'Unable to retrieve referral information for this user',
         });
       });
-  }
-
+  },
 };
