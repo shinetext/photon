@@ -12,6 +12,11 @@ module.exports = {
       type: 'string',
       size: 128,
     },
+    id: {
+      columnName: 'id',
+      type: 'integer',
+      size: 11,
+    },
 
     firstName: {
       columnName: 'first_name',

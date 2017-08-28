@@ -69,4 +69,44 @@ module.exports = {
         });
       });
   },
+  // Lookup user information using custom url
+  findCustomUrl: function(req, res) {
+    let customUrl = req.params.customUrl;
+    let resBody = {};
+    CustomReferralUrl.findOne({ referralUrl: customUrl })
+      .then(function(result) {
+        if (typeof result === 'undefined') {
+          throw new Error();
+        }
+        resBody = Object.assign({}, resBody, result);
+        // Get alpha/referer's information using foreign key in custom_url_table
+        // The foreign in the custom_url_table is the id unique to the referers
+        // platform. ie. sms,fb, mobile app
+        if (resBody.platformSmsId) {
+          User.findOne({ id: result.platformSmsId })
+            .then(function(result) {
+              if (typeof result === 'undefined') {
+                throw new Error();
+              }
+              return User.count({
+                referredBy: result.phone,
+              });
+            })
+            .then(function(referralCount) {
+              resBody.referralCount = referralCount;
+              return res.json(resBody);
+            })
+            .catch(function(error) {
+              return res.json(404, {
+                error: 'Unable to retrieve referral information for this user',
+              });
+            });
+        }
+      })
+      .catch(function(error) {
+        return res.json(404, {
+          error: 'Unable to find a user associated with this url',
+        });
+      });
+  },
 };

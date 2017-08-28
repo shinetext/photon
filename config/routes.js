@@ -26,6 +26,8 @@ module.exports.routes = {
   'get /referral/:phone': 'ReferralController.findOne',
   'post /signup': 'SignupController.signup',
 
+  'get /invites/:customUrl': 'ReferralController.findCustomUrl',
+
   'get /users': {
     controller: 'UserController',
     action: 'find',
