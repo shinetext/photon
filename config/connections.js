@@ -29,7 +29,7 @@ module.exports.connections = {
     host: process.env.PHOTON_DB_HOST || 'localhost',
     port: process.env.PHOTON_DB_PORT || '3306',
     user: process.env.PHOTON_DB_USER || 'root',
-    password: process.env.PHOTON_DB_PASSWORD || '',
+    password: process.env.PHOTON_DB_PASSWORD || 'dragon123',
     database: process.env.PHOTON_DB_DATABASE || 'photon',
     ssl: process.env.USE_AWS_RDS ? 'Amazon RDS' : false,
   },

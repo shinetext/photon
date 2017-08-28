@@ -42,6 +42,10 @@ module.exports = {
   decode: function(code) {
     let number = hashids.decode(code);
     return number.toString();
+  },
+  generateCustomUrl: function(name) {
+    let grammar = 'graceful';
+    return `${name}-${grammar}`
   }
 
 };

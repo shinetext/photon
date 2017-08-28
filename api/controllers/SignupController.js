@@ -69,14 +69,32 @@ module.exports = {
         if (!result) {
           throw new Error();
         }
-
         // Result from an update is an array
         if (result.length > 0) {
-          return res.json(result[0]);
+          return result[0];
         } else {
           // Result from a create is the user object
-          return res.json(result);
+          return result;
         }
+      })
+      .then(function(result) {
+        // Create custom referral url after a sms user has been created
+        let uniqueUrl = ReferralCodes.generateCustomUrl(result.firstName);
+        User.count({ firstName: result.firstName }).exec(function(
+          error,
+          count
+        ) {
+          if (error) {
+            return error;
+          }
+          CustomReferralUrl.create({
+            firstName: result.firstName,
+            platformSmsId: result.id,
+            referralUrl: uniqueUrl + count,
+            createdAt: new Date(),
+          });
+        });
+        res.json(result);
       })
       .catch(function(error) {
         sails.log.error(error);
