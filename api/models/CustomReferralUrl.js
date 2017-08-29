@@ -6,11 +6,6 @@ module.exports = {
   autoUpdatedAt: false,
 
   attributes: {
-    firstName: {
-      columnName: 'first_name',
-      type: 'string',
-      size: 256,
-    },
     referralUrl: {
       columnName: 'referral_url',
       type: 'string',
@@ -21,10 +16,6 @@ module.exports = {
       type: 'integer',
       size: 11
     },
-    createdAt: {
-        columnName: 'created_at',
-        type: 'date'
-    }
     // TODO add keys facebook, kik, mobile and referral_count
   }
 }

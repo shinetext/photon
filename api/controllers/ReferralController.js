@@ -72,28 +72,28 @@ module.exports = {
   // Lookup user information using custom url
   findCustomUrl: function(req, res) {
     let customUrl = req.params.customUrl;
-    let resBody = {};
+    let resBody = { customUrl: req.params.customUrl, referralCount: 0 };
     CustomReferralUrl.findOne({ referralUrl: customUrl })
       .then(function(result) {
         if (typeof result === 'undefined') {
           throw new Error();
         }
-        resBody = Object.assign({}, resBody, result);
         // Get alpha/referer's information using foreign key in custom_url_table
         // The foreign in the custom_url_table is the id unique to the referers
         // platform. ie. sms,fb, mobile app
-        if (resBody.platformSmsId) {
+        if (result.platformSmsId) {
           User.findOne({ id: result.platformSmsId })
             .then(function(result) {
               if (typeof result === 'undefined') {
                 throw new Error();
               }
+              Object.assign(resBody, result);
               return User.count({
                 referredBy: result.phone,
               });
             })
             .then(function(referralCount) {
-              resBody.referralCount = referralCount;
+              Object.assign(resBody, { referralCount: referralCount });
               return res.json(resBody);
             })
             .catch(function(error) {
@@ -101,6 +101,9 @@ module.exports = {
                 error: 'Unable to retrieve referral information for this user',
               });
             });
+        }
+        else {
+          throw new Error();
         }
       })
       .catch(function(error) {

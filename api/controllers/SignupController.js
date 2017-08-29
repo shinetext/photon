@@ -89,7 +89,6 @@ module.exports = {
             firstName: result.firstName,
             platformSmsId: result.id,
             referralUrl: uniqueUrl + count,
-            createdAt: new Date(),
           }).catch(function(error) {
             sails.log.error(error);
           });
