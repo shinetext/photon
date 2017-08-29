@@ -69,6 +69,7 @@ module.exports = {
         if (!result) {
           throw new Error();
         }
+
         // Result from an update is an array
         if (result.length > 0) {
           return result[0];
@@ -79,22 +80,21 @@ module.exports = {
       })
       .then(function(result) {
         // Create custom referral url after a sms user has been created
-        let uniqueUrl = ReferralCodes.generateCustomUrl(result.firstName);
-        User.count({ firstName: result.firstName }).exec(function(
-          error,
-          count
-        ) {
-          if (error) {
-            return error;
-          }
+        // Use a users first name, phone number or email
+        let uniqueString = result.firstName || result.email || result.phone;
+        let uniqueUrl = ReferralCodes.generateCustomUrl(uniqueString);
+
+        User.count({ firstName: uniqueString }).then(function(count) {
           CustomReferralUrl.create({
             firstName: result.firstName,
             platformSmsId: result.id,
             referralUrl: uniqueUrl + count,
             createdAt: new Date(),
+          }).catch(function(error) {
+            sails.log.error(error);
           });
+          return res.json(result);
         });
-        res.json(result);
       })
       .catch(function(error) {
         sails.log.error(error);
