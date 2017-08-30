@@ -44,8 +44,8 @@ module.exports = {
     return number.toString();
   },
   generateCustomUrl: function(name) {
-    let grammar = 'graceful';
-    return `${name}-${grammar}`
+    let grammar = 'Graceful';
+    return `${name}${grammar}`
   }
 
 };

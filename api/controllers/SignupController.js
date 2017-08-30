@@ -10,6 +10,10 @@ module.exports = {
     let firstName = req.body.firstName;
     let phone = PhoneUtils.transformForDb(req.body.phone);
 
+    // Custom Url Info
+    let platformSmsId;
+    let uniqueUrl;
+
     if (
       typeof firstName === 'undefined' ||
       phone === null ||
@@ -80,19 +84,20 @@ module.exports = {
       })
       .then(function(result) {
         // Create custom referral url after a sms user has been created
-        // Use a users first name, phone number or email
-        let uniqueString = result.firstName || result.email || result.phone;
-        let uniqueUrl = ReferralCodes.generateCustomUrl(uniqueString);
-
-        User.count({ firstName: uniqueString }).then(function(count) {
-          CustomReferralUrl.create({
-            firstName: result.firstName,
-            platformSmsId: result.id,
-            referralUrl: uniqueUrl + count,
-          }).catch(function(error) {
-            sails.log.error(error);
-          });
-          return res.json(result);
+        // Use a users first name if available or default to SHINE
+        let uniqueString = result.firstName || 'SHINE';
+        uniqueUrl = ReferralCodes.generateCustomUrl(uniqueString);
+        platformSmsId = result.id;
+        return UserUrl.countByCodeLike(`${uniqueUrl}%`);
+      })
+      .then(function(count) {
+        UserUrl.create({
+          code: uniqueUrl + count,
+          platformSmsId: platformSmsId,
+        });
+        return res.json({
+          Success:
+            'All steps completed. User was created/updated with a unique referral link',
         });
       })
       .catch(function(error) {

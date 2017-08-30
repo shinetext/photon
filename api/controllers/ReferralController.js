@@ -69,18 +69,21 @@ module.exports = {
         });
       });
   },
-  // Lookup user information using custom url
+  /**
+   * Find a user using custom url params
+   * Get alpha/referrer's information using foreign key in custom_url_table
+   * The foreign key in the custom_url_table is the id unique to the referrer
+   * platform. ie. sms,fb, mobile app
+   */
   findCustomUrl: function(req, res) {
     let customUrl = req.params.customUrl;
     let resBody = { customUrl: req.params.customUrl, referralCount: 0 };
-    CustomReferralUrl.findOne({ referralUrl: customUrl })
+    UserUrl.findOne({ code: customUrl })
       .then(function(result) {
         if (typeof result === 'undefined') {
           throw new Error();
         }
-        // Get alpha/referer's information using foreign key in custom_url_table
-        // The foreign in the custom_url_table is the id unique to the referers
-        // platform. ie. sms,fb, mobile app
+        // Find SMS subscribed users
         if (result.platformSmsId) {
           User.findOne({ id: result.platformSmsId })
             .then(function(result) {
@@ -101,8 +104,7 @@ module.exports = {
                 error: 'Unable to retrieve referral information for this user',
               });
             });
-        }
-        else {
+        } else { //TODO Handle users from FB/KIK/MOBILE_APP
           throw new Error();
         }
       })

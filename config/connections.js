@@ -20,7 +20,6 @@
  */
 
 module.exports.connections = {
-
   /**
    * Connection details to the Photon database.
    */
@@ -33,5 +32,4 @@ module.exports.connections = {
     database: process.env.PHOTON_DB_DATABASE || 'photon',
     ssl: process.env.USE_AWS_RDS ? 'Amazon RDS' : false,
   },
-
 };
