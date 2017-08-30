@@ -91,13 +91,16 @@ module.exports = {
         return UserUrl.countByCodeLike(`${uniqueUrl}%`);
       })
       .then(function(count) {
-        UserUrl.create({
+        return UserUrl.create({
           code: uniqueUrl + count,
           platformSmsId: platformSmsId,
         });
+      })
+      .then(function(result) {
         return res.json({
           Success:
-            'All steps completed. User was created/updated with a unique referral link',
+            'All steps completed. A new user & unique url have been created ',
+          url: result,
         });
       })
       .catch(function(error) {
