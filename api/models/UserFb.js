@@ -19,6 +19,13 @@ module.exports = {
       columnName: "first_name",
       type: "string",
       size: 64
-    }
+    },
+
+    referredBy: {
+      columnName: "referred_by",
+      type: "string",
+      size: 64
+    },
+
   }
 };

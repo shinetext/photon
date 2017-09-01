@@ -16,6 +16,11 @@ module.exports = {
       type: 'integer',
       size: 11,
     },
+    platformFbId: {
+      columnName: 'platform_fb_id',
+      type: 'integer',
+      size: 11,
+    },
     // TODO add keys facebook, kik, mobile and referral_count
   },
 };
