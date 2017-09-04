@@ -78,7 +78,7 @@ module.exports = {
   findCustomUrl: function(req, res) {
     let customUrl = req.params.customUrl;
     let resBody = { customUrl: req.params.customUrl, referralCount: 0 };
-    UserUrl.findOne({ code: customUrl })
+    UserReferralCodesTwo.findOne({ code: customUrl })
       .then(function(result) {
         if (typeof result === 'undefined') {
           throw new Error();

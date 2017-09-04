@@ -1,7 +1,7 @@
 module.exports = {
   connection: 'photonDb',
   migrate: 'safe',
-  tableName: 'user_url',
+  tableName: 'user_referral_codes_v2',
   autoCreatedAt: false,
   autoUpdatedAt: false,
 

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = {
   /**
@@ -15,11 +15,11 @@ module.exports = {
     let uniqueUrl;
 
     if (
-      typeof firstName === 'undefined' ||
+      typeof firstName === "undefined" ||
       phone === null ||
       phone.length !== 11
     ) {
-      return res.json(400, 'Invalid first name and/or phone number');
+      return res.json(400, "Invalid first name and/or phone number");
     }
 
     // Optional
@@ -39,7 +39,7 @@ module.exports = {
       .then(function(result) {
         let user = {
           firstName: firstName,
-          phone: phone,
+          phone: phone
         };
 
         if (email) {
@@ -52,7 +52,7 @@ module.exports = {
           !result ||
           !result.referredBy ||
           !result.mobilecommonsStatus ||
-          result.mobilecommonsStatus === 'Profiles with no Subscriptions';
+          result.mobilecommonsStatus === "Profiles with no Subscriptions";
         if (referredBy && canUpdateReferredBy) {
           user.referredBy = referredBy;
         }
@@ -82,32 +82,36 @@ module.exports = {
           return result;
         }
       })
-      .then(function(result) {
+      .then(function(user) {
+        // Save the user object to be returned later
         // Create custom referral url after a sms user has been created
         // Use a users first name if available or default to SHINE
-        let uniqueString = result.firstName || 'SHINE';
+        let uniqueString = user.firstName || "SHINE";
         uniqueUrl = ReferralCodes.generateCustomUrl(uniqueString);
-        platformSmsId = result.id;
-        return UserUrl.countByCodeLike(`${uniqueUrl}%`);
-      })
-      .then(function(count) {
-        return UserUrl.create({
-          code: uniqueUrl + count,
-          platformSmsId: platformSmsId,
+        platformSmsId = user.id;
+        let countPromise = UserReferralCodesTwo.countByCodeLike(
+          `${uniqueUrl}%`
+        );
+        let newUserReferralCode = countPromise.then(function(count) {
+          // If the the count of users with a similar uniqueUrl/code less than
+          // one set count to empty string else leave it as the number
+          count < 1 ? (count = "") : null;
+          return UserReferralCodesTwo.create({
+            code: uniqueUrl + count,
+            platformSmsId: platformSmsId
+          });
         });
-      })
-      .then(function(result) {
-        return res.json({
-          Success:
-            'All steps completed. A new user & unique url have been created ',
-          url: result,
+        return Promise.all([countPromise, newUserReferralCode]).then(function(
+          [count, code]
+        ) {
+          return res.json({ user: user, userReferralCodeTwo: code });
         });
       })
       .catch(function(error) {
         sails.log.error(error);
         return res.json(500, {
-          error: 'There was an error in processing the signup',
+          error: "There was an error in processing the signup"
         });
       });
-  },
+  }
 };
