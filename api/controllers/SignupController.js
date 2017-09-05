@@ -97,7 +97,7 @@ module.exports = {
           // one set count to empty string else leave it as the number
           count < 1 ? (count = "") : null;
           return UserReferralCodesTwo.create({
-            code: uniqueUrl + count,
+            code: `${uniqueUrl}${count}`,
             platformSmsId: platformSmsId
           });
         });
