@@ -1,5 +1,7 @@
 "use strict";
 
+let Promise = require("bluebird");
+
 module.exports = {
   /**
    * Handles a signup submission. Upserts the user and decodes the referral code
@@ -87,7 +89,7 @@ module.exports = {
         // Create custom referral url after a sms user has been created
         // Use a users first name if available or default to SHINE
         let uniqueString = user.firstName || "SHINE";
-        uniqueUrl = ReferralCodes.generateCustomUrl(uniqueString);
+        uniqueUrl = CustomUrl.generateCustomUrl(uniqueString);
         platformSmsId = user.id;
         let countPromise = UserReferralCodesTwo.countByCodeLike(
           `${uniqueUrl}%`
