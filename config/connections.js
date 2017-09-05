@@ -20,18 +20,16 @@
  */
 
 module.exports.connections = {
-
   /**
    * Connection details to the Photon database.
    */
   photonDb: {
     adapter: 'sails-mysql',
     host: process.env.PHOTON_DB_HOST || 'localhost',
-    port: process.env.PHOTON_DB_PORT || '',
+    port: process.env.PHOTON_DB_PORT || '3306',
     user: process.env.PHOTON_DB_USER || 'root',
     password: process.env.PHOTON_DB_PASSWORD || 'password',
     database: process.env.PHOTON_DB_DATABASE || 'photon',
     ssl: process.env.USE_AWS_RDS ? 'Amazon RDS' : false,
   },
-
 };

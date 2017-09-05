@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = {
   /**
@@ -11,15 +11,15 @@ module.exports = {
 
     let resBody = {
       phone: phone,
-      referralCode: '',
-      referralCount: 0,
+      referralCode: "",
+      referralCount: 0
     };
 
     // Find this user by the phone number
     User.findOne({ phone: phone })
       .then(function(result) {
         // Throw an error if the user's not found
-        if (typeof result === 'undefined') {
+        if (typeof result === "undefined") {
           throw new Error();
         }
 
@@ -50,7 +50,7 @@ module.exports = {
       .then(function(results) {
         return User.count({
           referredBy: phone,
-          mobilecommonsStatus: { '!': ['Profiles with no Subscriptions'] },
+          mobilecommonsStatus: { "!": ["Profiles with no Subscriptions"] }
         });
         // Note: In actual use, the above also seems to take care of cases where
         // mobilecommonsStatus is undefined. But it doesn't in unit tests.
@@ -65,8 +65,71 @@ module.exports = {
       .catch(function(error) {
         return res.json(404, {
           phone: phone,
-          error: 'Unable to retrieve referral information for this user',
+          error: "Unable to retrieve referral information for this user"
         });
       });
   },
+  /**
+   * Find a user using custom url params
+   * Get alpha/referrer's information using foreign key in custom_url_table
+   * The foreign key in the custom_url_table is the id unique to the referrer
+   * platform. ie. sms,fb, mobile app
+   */
+  findCustomUrl: function(req, res) {
+    let customUrl = req.params.customUrl;
+    let resBody = { customUrl: req.params.customUrl, referralCount: 0 };
+    UserReferralCodesTwo.findOne({ code: customUrl })
+      .then(function(result) {
+        if (typeof result === "undefined") {
+          throw new Error();
+        }
+        // Find SMS subscribed users
+        if (result.platformSmsId) {
+          User.findOne({ id: result.platformSmsId })
+            .then(function(result) {
+              if (typeof result === "undefined") {
+                throw new Error();
+              }
+              Object.assign(resBody, result);
+              return User.count({
+                referredBy: result.phone
+              });
+            })
+            .then(function(referralCount) {
+              Object.assign(resBody, { referralCount: referralCount });
+              return res.json(resBody);
+            })
+            .catch(function(error) {
+              return res.json(404, {
+                error: "Unable to retrieve referral information for this user"
+              });
+            });
+        } else if (result.platformFbId) {
+          // Find facebook users
+          UserFb.findOne({ id: result.platformFbId })
+            .then(function(result) {
+              Object.assign(resBody, result);
+              return UserFb.count({ referredBy: customUrl });
+            })
+            .then(function(referralCount) {
+              Object.assign(resBody, { referralCount: referralCount });
+              return res.json(resBody);
+            })
+            .catch(function(error) {
+              return res.json(404, {
+                error:
+                  "Unable to retrieve information on the facebook user linked to this url"
+              });
+            });
+        } else {
+          //TODO Handle users from FB/KIK/MOBILE_APP
+          throw new Error();
+        }
+      })
+      .catch(function(error) {
+        return res.json(404, {
+          error: "Unable to find a user associated with this url"
+        });
+      });
+  }
 };
