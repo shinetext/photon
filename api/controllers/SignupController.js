@@ -85,24 +85,39 @@ module.exports = {
         }
       })
       .then(function(user) {
+        // Create custom referral url after a sms user has been created
+        // Use a users first name if available or default to SHINE
+        let uniqueString = user.firstName || "SHINE";
+        uniqueUrl = CustomUrl.generateCustomUrl(uniqueString);
+        platformSmsId = user.id;
+
         return Promise.coroutine(function*() {
-          // Create custom referral url after a sms user has been created
-          // Use a users first name if available or default to SHINE
-          let uniqueString = user.firstName || "SHINE";
-          uniqueUrl = CustomUrl.generateCustomUrl(uniqueString);
-          platformSmsId = user.id;
-          try {
-            let count = yield UserReferralCodesTwo.countByCodeLike(
-              `${uniqueUrl}%`
+          let count = yield UserReferralCodesTwo.countByCodeLike(
+            `${uniqueUrl}%`
+          );
+          // If count is less than one add empty string onto user code
+          count < 1 ? (count = "") : null;
+          // Find a record of user
+          let record = yield UserReferralCodesTwo.findOne({
+            platformSmsId: platformSmsId
+          });
+          // If user exists update user referral code
+          if (record) {
+            yield UserReferralCodesTwo.update(
+              {
+                platformSmsId: platformSmsId
+              },
+              {
+                code: `${uniqueUrl}${count}`
+              }
             );
+          }
+          // If user is new create a new user code 
+          else {
             yield UserReferralCodesTwo.create({
-              code: `${uniqueUrl}${count}`,
-              platformSmsId: platformSmsId
+              platformSmsId: platformSmsId,
+              code: `${uniqueUrl}${count}`
             });
-            return res.json(user);
-          } catch (error) {
-            sails.log.error(error);
-            return res.json(user);
           }
           return res.json(user);
         })();
