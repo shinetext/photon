@@ -27,6 +27,7 @@ module.exports = {
     // Optional
     let email = req.body.email;
     let referredBy;
+    let referredByV2 = req.body.referredByV2;
     let referredByCode = req.body.referredByCode;
     if (referredByCode) {
       let number = ReferralCodes.decode(referredByCode);
@@ -46,6 +47,10 @@ module.exports = {
 
         if (email) {
           user.email = email;
+        }
+        
+        if (referredByV2) {
+          user.referredByV2 = referredByV2
         }
 
         // The referredBy value can be updated if it has not yet been set, or if
@@ -92,18 +97,18 @@ module.exports = {
         platformSmsId = user.id;
 
         return Promise.coroutine(function*() {
-          let count = yield UserReferralCodesTwo.countByCodeLike(
+          let count = yield UserReferralCodesV2.countByCodeLike(
             `${uniqueUrl}%`
           );
           // If count is less than one add empty string onto user code
           count < 1 ? (count = "") : null;
           // Find a record of user
-          let record = yield UserReferralCodesTwo.findOne({
+          let record = yield UserReferralCodesV2.findOne({
             platformSmsId: platformSmsId
           });
           // If user exists update user referral code
           if (record) {
-            yield UserReferralCodesTwo.update(
+            yield UserReferralCodesV2.update(
               {
                 platformSmsId: platformSmsId
               },
@@ -112,9 +117,9 @@ module.exports = {
               }
             );
           }
-          // If user is new create a new user code 
+          // If user is new create a new user code
           else {
-            yield UserReferralCodesTwo.create({
+            yield UserReferralCodesV2.create({
               platformSmsId: platformSmsId,
               code: `${uniqueUrl}${count}`
             });

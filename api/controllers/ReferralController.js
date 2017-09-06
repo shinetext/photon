@@ -1,10 +1,6 @@
 "use strict";
 
-<<<<<<< HEAD
 let Promise = require("bluebird");
-=======
-var Promise = require("bluebird");
->>>>>>> count-all
 
 module.exports = {
   /**
@@ -86,7 +82,7 @@ module.exports = {
     let resBody = { customUrl: req.params.customUrl, referralCount: 0, user: null };
     return Promise.coroutine(function*() {
       try {
-        let userCode = yield UserReferralCodesTwo.findOne({ code: customUrl });
+        let userCode = yield UserReferralCodesV2.findOne({ code: customUrl });
         let count = 0;
         let user;
         // If a user subscribed using sms get that users information
@@ -97,7 +93,7 @@ module.exports = {
           user = yield UserFb.findOne({ id: userCode.platformFbId});
         }
         // Count all fb & sms users referred using code
-        count += yield User.count({ referredByTwo: customUrl })
+        count += yield User.count({ referredByV2: customUrl })
         count += yield UserFb.count({ referredBy: customUrl })
 
         return res.json(Object.assign(resBody, { referralCount: count, user: user }))
