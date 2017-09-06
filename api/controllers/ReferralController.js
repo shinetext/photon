@@ -94,7 +94,9 @@ module.exports = {
         }
         // Count all fb & sms users referred using code
         count += yield User.count({ referredByV2: customUrl })
-        count += yield UserFb.count({ referredBy: customUrl })
+        count += yield UserFb.count({ referredByV2: customUrl })
+        // Count users referred using referred_by_v1(?r=REFERRAL_CODE)
+        count += yield User.count({ referredBy: user.phone })
 
         return res.json(Object.assign(resBody, { referralCount: count, user: user }))
 
