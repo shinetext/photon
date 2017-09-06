@@ -1,6 +1,10 @@
 "use strict";
 
+<<<<<<< HEAD
 let Promise = require("bluebird");
+=======
+var Promise = require("bluebird");
+>>>>>>> count-all
 
 module.exports = {
   /**
@@ -78,31 +82,32 @@ module.exports = {
    * platform. ie. sms,fb, mobile app
    */
   findCustomUrl: function(req, res) {
+    let customUrl = req.params.customUrl;
+    let resBody = { customUrl: req.params.customUrl, referralCount: 0, user: null };
     return Promise.coroutine(function*() {
-      let customUrl = req.params.customUrl;
-      let resBody = { customUrl: req.params.customUrl, referralCount: 0 };
-      let user = yield UserReferralCodesTwo.findOne({ code: customUrl });
       try {
-        let smsUser;
-        let fbUser;
-        if (typeof user === "undefined") {
-          throw new Error();
+        let userCode = yield UserReferralCodesTwo.findOne({ code: customUrl });
+        let count = 0;
+        let user;
+        // If a user subscribed using sms get that users information
+        if (userCode.platformSmsId) {
+          user = yield User.findOne({ id: userCode.platformSmsId});
         }
-        if (user.platformSmsId) {
-          smsUser = yield User.findOne({ id: user.platformSmsId });
-          Object.assign(resBody, smsUser);
-        } else if (user.platformFbId) {
-          fbUser = yield UserFb.findOne({ id: user.platformFbId });
-          Object.assign(resBody, smsUser);
-        } else {
-          //TODO Handle users from KIK/MOBILE_APP
-          throw new Error();
+        if (userCode.platformFbId) {
+          user = yield UserFb.findOne({ id: userCode.platformFbId});
         }
-        return res.json(resBody);
+        // Count all fb & sms users referred using code
+        count += yield User.count({ referredByTwo: customUrl })
+        count += yield UserFb.count({ referredBy: customUrl })
+
+        return res.json(Object.assign(resBody, { referralCount: count, user: user }))
+
       } catch (error) {
-        sails.log.error(error, "Error. Can't find a user associated with url");
-        return res.status(404).send("Bad Request");
+        return res.json(404, {
+          error: "Unable to find a user associated with this url"
+        });
       }
+      return res.json(resBody);
     })();
   }
 };
