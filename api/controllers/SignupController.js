@@ -1,5 +1,7 @@
 "use strict";
 
+let Promise = require("bluebird");
+
 module.exports = {
   /**
    * Handles a signup submission. Upserts the user and decodes the referral code
@@ -25,6 +27,7 @@ module.exports = {
     // Optional
     let email = req.body.email;
     let referredBy;
+    let referredByV2 = req.body.referredByV2;
     let referredByCode = req.body.referredByCode;
     if (referredByCode) {
       let number = ReferralCodes.decode(referredByCode);
@@ -44,6 +47,10 @@ module.exports = {
 
         if (email) {
           user.email = email;
+        }
+        
+        if (referredByV2) {
+          user.referredByV2 = referredByV2
         }
 
         // The referredBy value can be updated if it has not yet been set, or if
@@ -83,29 +90,42 @@ module.exports = {
         }
       })
       .then(function(user) {
-        // Save the user object to be returned later
         // Create custom referral url after a sms user has been created
         // Use a users first name if available or default to SHINE
         let uniqueString = user.firstName || "SHINE";
-        uniqueUrl = ReferralCodes.generateCustomUrl(uniqueString);
+        uniqueUrl = CustomUrl.generateCustomUrl(uniqueString);
         platformSmsId = user.id;
-        let countPromise = UserReferralCodesTwo.countByCodeLike(
-          `${uniqueUrl}%`
-        );
-        let newUserReferralCode = countPromise.then(function(count) {
-          // If the the count of users with a similar uniqueUrl/code less than
-          // one set count to empty string else leave it as the number
+
+        return Promise.coroutine(function*() {
+          let count = yield UserReferralCodesV2.countByCodeLike(
+            `${uniqueUrl}%`
+          );
+          // If count is less than one add empty string onto user code
           count < 1 ? (count = "") : null;
-          return UserReferralCodesTwo.create({
-            code: uniqueUrl + count,
+          // Find a record of user
+          let record = yield UserReferralCodesV2.findOne({
             platformSmsId: platformSmsId
           });
-        });
-        return Promise.all([countPromise, newUserReferralCode]).then(function(
-          [count, code]
-        ) {
-          return res.json({ user: user, userReferralCodeTwo: code });
-        });
+          // If user exists update user referral code
+          if (record) {
+            yield UserReferralCodesV2.update(
+              {
+                platformSmsId: platformSmsId
+              },
+              {
+                code: `${uniqueUrl}${count}`
+              }
+            );
+          }
+          // If user is new create a new user code
+          else {
+            yield UserReferralCodesV2.create({
+              platformSmsId: platformSmsId,
+              code: `${uniqueUrl}${count}`
+            });
+          }
+          return res.json(user);
+        })();
       })
       .catch(function(error) {
         sails.log.error(error);

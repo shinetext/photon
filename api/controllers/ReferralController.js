@@ -1,5 +1,7 @@
 "use strict";
 
+let Promise = require("bluebird");
+
 module.exports = {
   /**
    * Finds a user's referral code and the number of people they've successfully
@@ -77,59 +79,33 @@ module.exports = {
    */
   findCustomUrl: function(req, res) {
     let customUrl = req.params.customUrl;
-    let resBody = { customUrl: req.params.customUrl, referralCount: 0 };
-    UserReferralCodesTwo.findOne({ code: customUrl })
-      .then(function(result) {
-        if (typeof result === "undefined") {
-          throw new Error();
+    let resBody = { customUrl: req.params.customUrl, referralCount: 0, user: null };
+    return Promise.coroutine(function*() {
+      try {
+        let userCode = yield UserReferralCodesV2.findOne({ code: customUrl });
+        let count = 0;
+        let user;
+        // If a user subscribed using sms get that users information
+        if (userCode.platformSmsId) {
+          user = yield User.findOne({ id: userCode.platformSmsId});
         }
-        // Find SMS subscribed users
-        if (result.platformSmsId) {
-          User.findOne({ id: result.platformSmsId })
-            .then(function(result) {
-              if (typeof result === "undefined") {
-                throw new Error();
-              }
-              Object.assign(resBody, result);
-              return User.count({
-                referredBy: result.phone
-              });
-            })
-            .then(function(referralCount) {
-              Object.assign(resBody, { referralCount: referralCount });
-              return res.json(resBody);
-            })
-            .catch(function(error) {
-              return res.json(404, {
-                error: "Unable to retrieve referral information for this user"
-              });
-            });
-        } else if (result.platformFbId) {
-          // Find facebook users
-          UserFb.findOne({ id: result.platformFbId })
-            .then(function(result) {
-              Object.assign(resBody, result);
-              return UserFb.count({ referredBy: customUrl });
-            })
-            .then(function(referralCount) {
-              Object.assign(resBody, { referralCount: referralCount });
-              return res.json(resBody);
-            })
-            .catch(function(error) {
-              return res.json(404, {
-                error:
-                  "Unable to retrieve information on the facebook user linked to this url"
-              });
-            });
-        } else {
-          //TODO Handle users from FB/KIK/MOBILE_APP
-          throw new Error();
+        if (userCode.platformFbId) {
+          user = yield UserFb.findOne({ id: userCode.platformFbId});
         }
-      })
-      .catch(function(error) {
+        // Count all fb & sms users referred using code
+        count += yield User.count({ referredByV2: customUrl })
+        count += yield UserFb.count({ referredByV2: customUrl })
+        // Count users referred using referred_by_v1(?r=REFERRAL_CODE)
+        count += yield User.count({ referredBy: user.phone })
+
+        return res.json(Object.assign(resBody, { referralCount: count, user: user }))
+
+      } catch (error) {
         return res.json(404, {
           error: "Unable to find a user associated with this url"
         });
-      });
+      }
+      return res.json(resBody);
+    })();
   }
 };

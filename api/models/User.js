@@ -45,6 +45,12 @@ module.exports = {
       size: 11,
     },
 
+    referredByV2: {
+      columnName: 'referred_by_v2',
+      type: 'string',
+      size: 64,
+    },
+
     mobilecommonsStatus: {
       columnName: 'mobilecommons_status',
       type: 'string',

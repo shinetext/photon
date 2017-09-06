@@ -21,8 +21,8 @@ module.exports = {
       size: 64
     },
 
-    referredBy: {
-      columnName: "referred_by",
+    referredByV2: {
+      columnName: "referred_by_v2",
       type: "string",
       size: 64
     },
