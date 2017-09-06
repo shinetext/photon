@@ -85,29 +85,27 @@ module.exports = {
         }
       })
       .then(function(user) {
-        // Save the user object to be returned later
-        // Create custom referral url after a sms user has been created
-        // Use a users first name if available or default to SHINE
-        let uniqueString = user.firstName || "SHINE";
-        uniqueUrl = CustomUrl.generateCustomUrl(uniqueString);
-        platformSmsId = user.id;
-        let countPromise = UserReferralCodesTwo.countByCodeLike(
-          `${uniqueUrl}%`
-        );
-        let newUserReferralCode = countPromise.then(function(count) {
-          // If the the count of users with a similar uniqueUrl/code less than
-          // one set count to empty string else leave it as the number
-          count < 1 ? (count = "") : null;
-          return UserReferralCodesTwo.create({
-            code: `${uniqueUrl}${count}`,
-            platformSmsId: platformSmsId
-          });
-        });
-        return Promise.all([countPromise, newUserReferralCode]).then(function(
-          [count, code]
-        ) {
-          return res.json({ user: user, userReferralCodeTwo: code });
-        });
+        return Promise.coroutine(function*() {
+          // Create custom referral url after a sms user has been created
+          // Use a users first name if available or default to SHINE
+          let uniqueString = user.firstName || "SHINE";
+          uniqueUrl = CustomUrl.generateCustomUrl(uniqueString);
+          platformSmsId = user.id;
+          try {
+            let count = yield UserReferralCodesTwo.countByCodeLike(
+              `${uniqueUrl}%`
+            );
+            yield UserReferralCodesTwo.create({
+              code: `${uniqueUrl}${count}`,
+              platformSmsId: platformSmsId
+            });
+            return res.json(user);
+          } catch (error) {
+            sails.log.error(error);
+            return res.json(user);
+          }
+          return res.json(user);
+        })();
       })
       .catch(function(error) {
         sails.log.error(error);
