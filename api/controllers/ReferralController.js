@@ -1,5 +1,7 @@
 'use strict';
 
+const Promise = require('bluebird');
+
 module.exports = {
   /**
    * Finds a user's referral code and the number of people they've successfully
@@ -48,18 +50,20 @@ module.exports = {
       })
       // Get the number of people the user has successfully referred
       .then(function(results) {
-        return User.count({
-          referredBy: phone,
-          mobilecommonsStatus: { '!': ['Profiles with no Subscriptions'] },
-        });
-        // Note: In actual use, the above also seems to take care of cases where
-        // mobilecommonsStatus is undefined. But it doesn't in unit tests.
-      })
-      // Add the count to the response and send
-      .then(function(result) {
-        resBody.referralCount = result;
+        const query = `SELECT count(*) AS count FROM users WHERE (NOT mobilecommons_status='Profiles with no Subscriptions' OR mobilecommons_status IS NULL) AND referred_by= ?`
+          // Note: In actual use, the above also seems to take care of cases where
+          // mobilecommonsStatus is undefined. But it doesn't in unit tests.
 
-        return res.json(resBody);
+       User.query(query, [phone], (err, result) => {
+         if (err) {
+           console.error(err);
+           throw new Error('error');
+         } else {
+            // Add the count to the response and send
+            resBody.referralCount = result[0].count;
+            return res.json(resBody);
+         }
+       });
       })
       // In case of error, respond with something
       .catch(function(error) {
