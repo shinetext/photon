@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 module.exports = {
   /**
    * Finds a user's referral code and the number of people they've successfully
