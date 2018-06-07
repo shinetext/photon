@@ -48,20 +48,20 @@ module.exports = {
       })
       // Get the number of people the user has successfully referred
       .then(function(results) {
-        const query = `SELECT count(*) AS count FROM users WHERE (NOT mobilecommons_status='Profiles with no Subscriptions' OR mobilecommons_status IS NULL) AND referred_by= ?`
-          // Note: In actual use, the above also seems to take care of cases where
-          // mobilecommonsStatus is undefined. But it doesn't in unit tests.
+        const query = `SELECT count(*) AS count FROM users
+          WHERE (mobilecommons_status != 'Profiles with no Subscriptions' OR mobilecommons_status IS NULL)
+          AND referred_by= ?`;
 
-       User.query(query, [phone], (err, result) => {
-         if (err) {
-           console.error(err);
-           throw new Error('error');
-         } else {
+        User.query(query, [phone], (err, result) => {
+          if (err) {
+            console.error(err);
+            throw new Error('error');
+          } else {
             // Add the count to the response and send
             resBody.referralCount = result[0].count;
             return res.json(resBody);
-         }
-       });
+          }
+        });
       })
       // In case of error, respond with something
       .catch(function(error) {
