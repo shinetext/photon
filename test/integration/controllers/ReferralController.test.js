@@ -14,7 +14,7 @@ describe('ReferralController', function() {
           404,
           {
             phone: '15555550199',
-            error: 'Unable to retrieve referral information for this user',
+            error: 'Unable to retrieve referral information for this user'
           },
           done
         );
@@ -45,6 +45,7 @@ describe('ReferralController', function() {
         .get('/referral/' + user.phone)
         .expect(200)
         .expect(function(res) {
+          assert.equal(res.body.id, user.id);
           assert.equal(res.body.phone, user.phone);
           assert.equal(res.body.referralCode, user.referralCode);
           assert.equal(res.body.referralCount, 2); // User.test.B and User.test.C
@@ -81,6 +82,7 @@ describe('ReferralController', function() {
         .get('/referral/' + user.phone)
         .expect(200)
         .expect(function(res) {
+          assert.equal(res.body.id, user.id);
           assert.equal(res.body.phone, user.phone);
           assert.equal(res.body.referralCode, expectedCode);
           assert.equal(res.body.referralCount, 0);
@@ -109,8 +111,8 @@ describe('ReferralController', function() {
         assert.deepEqual(params, [phone]);
         callback(undefined, [
           {
-            count: 1,
-          },
+            count: 1
+          }
         ]);
       };
 
