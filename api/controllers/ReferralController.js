@@ -10,9 +10,10 @@ module.exports = {
     let phone = PhoneUtils.transformForDb(req.params.phone);
 
     let resBody = {
+      id: undefined,
       phone: phone,
       referralCode: '',
-      referralCount: 0,
+      referralCount: 0
     };
 
     // Find this user by the phone number
@@ -22,6 +23,9 @@ module.exports = {
         if (typeof result === 'undefined') {
           throw new Error();
         }
+
+        // set user id in response body
+        resBody.id = result.id;
 
         // If there's already a referral code, add to the response. Otherwise,
         // set flag indicating that one will need to be created.
@@ -67,8 +71,8 @@ module.exports = {
       .catch(function(error) {
         return res.json(404, {
           phone: phone,
-          error: 'Unable to retrieve referral information for this user',
+          error: 'Unable to retrieve referral information for this user'
         });
       });
-  },
+  }
 };
