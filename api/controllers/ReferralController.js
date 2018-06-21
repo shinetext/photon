@@ -10,7 +10,7 @@ module.exports = {
     let phone = PhoneUtils.transformForDb(req.params.phone);
 
     let resBody = {
-      id: '',
+      id: undefined,
       phone: phone,
       referralCode: '',
       referralCount: 0
